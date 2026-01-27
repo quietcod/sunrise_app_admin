@@ -16,6 +16,8 @@ import 'package:flutex_admin/core/utils/style.dart';
 import 'package:flutex_admin/features/ticket/controller/ticket_controller.dart';
 import 'package:flutex_admin/features/ticket/repo/ticket_repo.dart';
 import 'package:flutex_admin/features/ticket/widget/ticket_reply.dart';
+import 'package:flutex_admin/features/ticket/widget/status_change_selector.dart';
+import 'package:flutex_admin/features/ticket/widget/add_reply_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -187,9 +189,19 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                               ],
                             ),
                           ),
+                          // Status Change Selector
+                          if (controller.ticketDetailsModel.data?.status != '5')
+                            StatusChangeSelector(
+                              ticketId: widget.id,
+                              currentStatus: controller.ticketDetailsModel.data?.status ?? '1',
+                            ),
+                          const SizedBox(height: Dimensions.space15),
+                          // Add Reply Widget
+                          AddReplyWidget(ticketId: widget.id),
+                          const SizedBox(height: Dimensions.space15),
                           if (controller.ticketDetailsModel.data?.ticketReplies
                                   ?.isNotEmpty ??
-                              false) ...[
+                              false) ...
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: Dimensions.space5,
@@ -214,7 +226,6 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                                 itemCount: controller.ticketDetailsModel.data!
                                     .ticketReplies!.length)
                           ]
-                        ],
                       ),
                     ),
                   ),

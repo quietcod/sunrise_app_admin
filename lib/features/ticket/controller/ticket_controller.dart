@@ -240,4 +240,54 @@ class TicketController extends GetxController {
     contactController.text = '';
     descriptionController.text = '';
   }
+
+  // Status Change Logic
+  bool isStatusChanging = false;
+
+  Future<void> changeStatus(String ticketId, String newStatus) async {
+    isStatusChanging = true;
+    update();
+
+    ResponseModel responseModel =
+        await ticketRepo.changeTicketStatus(ticketId, newStatus);
+
+    if (responseModel.status) {
+      await loadTicketDetails(ticketId);
+      CustomSnackBar.success(successList: ['Status updated successfully'.tr]);
+    } else {
+      CustomSnackBar.error(errorList: [responseModel.message.tr]);
+    }
+
+    isStatusChanging = false;
+    update();
+  }
+
+  // Reply Logic
+  bool isReplySubmitting = false;
+
+  Future<bool> addReply(String ticketId, String message) async {
+    if (message.trim().isEmpty) {
+      CustomSnackBar.error(errorList: ['Please enter a message'.tr]);
+      return false;
+    }
+
+    isReplySubmitting = true;
+    update();
+
+    ResponseModel responseModel =
+        await ticketRepo.addTicketReply(ticketId, message);
+
+    isReplySubmitting = false;
+
+    if (responseModel.status) {
+      await loadTicketDetails(ticketId);
+      CustomSnackBar.success(successList: ['Reply added successfully'.tr]);
+      update();
+      return true;
+    } else {
+      CustomSnackBar.error(errorList: [responseModel.message.tr]);
+      update();
+      return false;
+    }
+  }
 }

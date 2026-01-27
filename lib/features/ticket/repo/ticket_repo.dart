@@ -99,4 +99,28 @@ class TicketRepo {
         await apiClient.request(url, Method.getMethod, null, passHeader: true);
     return responseModel;
   }
+
+  Future<ResponseModel> changeTicketStatus(
+      String ticketId, String status) async {
+    String url =
+        "${UrlContainer.baseUrl}${UrlContainer.ticketsUrl}/id/$ticketId"; // Uses PUT method implicitly via apiClient logic usually, or explicit params
+    Map<String, dynamic> params = {
+      "ticketid": ticketId,
+      "status": status,
+    };
+    ResponseModel responseModel = await apiClient
+        .request(url, Method.putMethod, params, passHeader: true);
+    return responseModel;
+  }
+
+  Future<ResponseModel> addTicketReply(String ticketId, String message) async {
+    String url =
+        "${UrlContainer.baseUrl}${UrlContainer.ticketsUrl}/reply/id/$ticketId";
+    Map<String, dynamic> params = {
+      "message": message,
+    };
+    ResponseModel responseModel = await apiClient
+        .request(url, Method.postMethod, params, passHeader: true);
+    return responseModel;
+  }
 }
