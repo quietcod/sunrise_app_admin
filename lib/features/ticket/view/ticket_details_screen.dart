@@ -201,7 +201,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                           const SizedBox(height: Dimensions.space15),
                           if (controller.ticketDetailsModel.data?.ticketReplies
                                   ?.isNotEmpty ??
-                              false) ...
+                              false) ...[
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: Dimensions.space5,
@@ -226,6 +226,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                                 itemCount: controller.ticketDetailsModel.data!
                                     .ticketReplies!.length)
                           ]
+                        ]
                       ),
                     ),
                   ),
