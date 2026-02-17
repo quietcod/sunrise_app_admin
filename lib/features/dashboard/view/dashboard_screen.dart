@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutex_admin/common/components/app-bar/action_button_icon_widget.dart';
 import 'package:flutex_admin/common/components/circle_image_button.dart';
@@ -9,7 +8,6 @@ import 'package:flutex_admin/core/route/route.dart';
 import 'package:flutex_admin/core/service/api_service.dart';
 import 'package:flutex_admin/core/utils/color_resources.dart';
 import 'package:flutex_admin/core/utils/dimensions.dart';
-import 'package:flutex_admin/core/utils/images.dart';
 import 'package:flutex_admin/core/utils/local_strings.dart';
 import 'package:flutex_admin/core/utils/style.dart';
 import 'package:flutex_admin/features/dashboard/controller/dashboard_controller.dart';
@@ -74,7 +72,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: ColorResources.colorWhite, // Keeping the original white color
+                color: ColorResources
+                    .colorWhite, // Keeping the original white color
               ),
             ),
             actions: [
@@ -231,13 +230,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               items: [
                                 HomeInvoicesCard(
                                     invoices:
-                                        controller.homeModel.data?.invoices??[]),
+                                        controller.homeModel.data?.invoices ??
+                                            []),
                                 HomeEstimatesCard(
                                     estimates:
-                                        controller.homeModel.data?.estimates??[]),
+                                        controller.homeModel.data?.estimates ??
+                                            []),
                                 HomeProposalsCard(
                                     proposals:
-                                        controller.homeModel.data?.proposals??[]),
+                                        controller.homeModel.data?.proposals ??
+                                            []),
                               ],
                             ),
                             PositionedDirectional(

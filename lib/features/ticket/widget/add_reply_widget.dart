@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 class AddReplyWidget extends StatefulWidget {
   final String ticketId;
 
-  const AddReplyWidget({Key? key, required this.ticketId}) : super(key: key);
+  const AddReplyWidget({super.key, required this.ticketId});
 
   @override
   State<AddReplyWidget> createState() => _AddReplyWidgetState();
@@ -38,7 +38,8 @@ class _AddReplyWidgetState extends State<AddReplyWidget> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.comment_outlined, color: Colors.blue, size: 20),
+                  const Icon(Icons.comment_outlined,
+                      color: Colors.blue, size: 20),
                   const SizedBox(width: Dimensions.space8),
                   Text(
                     'Add Reply',
@@ -53,12 +54,12 @@ class _AddReplyWidgetState extends State<AddReplyWidget> {
               TextField(
                 controller: _replyController,
                 maxLines: 4,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Type your reply here...',
-                  border: const OutlineInputBorder(),
+                  border: OutlineInputBorder(),
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.all(Dimensions.space12),
+                  contentPadding: EdgeInsets.all(Dimensions.space12),
                 ),
               ),
               const SizedBox(height: Dimensions.space12),

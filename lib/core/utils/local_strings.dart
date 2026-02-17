@@ -520,6 +520,17 @@ class LocalStrings {
   static const String ticketMessage = "Message";
   static const String enterTicketReply = "Please, Enter Ticket Reply.";
 
+  // Ticket OTP Close
+  static const String otpSentToClient = "OTP has been sent to the client";
+  static const String enterOtp = "Enter OTP";
+  static const String enterOtpHint = "Enter the OTP received by the client";
+  static const String verifyAndClose = "Verify & Close Ticket";
+  static const String resendOtp = "Resend OTP";
+  static const String otpVerificationFailed = "OTP verification failed";
+  static const String invalidOtp = "Please enter a valid OTP";
+  static const String ticketClosedSuccessfully = "Ticket closed successfully";
+  static const String closeTicketOtp = "Close Ticket Verification";
+
   // Leads
   static const String lead = "Lead";
   static const String leads = "Leads";

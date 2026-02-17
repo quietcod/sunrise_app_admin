@@ -17,6 +17,7 @@ import 'package:flutex_admin/features/ticket/controller/ticket_controller.dart';
 import 'package:flutex_admin/features/ticket/repo/ticket_repo.dart';
 import 'package:flutex_admin/features/ticket/widget/ticket_reply.dart';
 import 'package:flutex_admin/features/ticket/widget/status_change_selector.dart';
+import 'package:flutex_admin/features/ticket/widget/otp_verification_screen.dart';
 import 'package:flutex_admin/features/ticket/widget/add_reply_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -78,158 +79,170 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
       ),
       body: GetBuilder<TicketController>(
         builder: (controller) {
-          return controller.isLoading
-              ? const CustomLoader()
-              : RefreshIndicator(
-                  color: Theme.of(context).primaryColor,
-                  backgroundColor: Theme.of(context).cardColor,
-                  onRefresh: () async {
-                    await controller.loadTicketDetails(widget.id);
-                  },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.all(Dimensions.space12),
+          if (controller.isLoading) {
+            return const CustomLoader();
+          }
+
+          // Show OTP verification screen when OTP has been sent
+          if (controller.isOtpScreenShowing) {
+            return OtpVerificationScreen(
+              ticketId: widget.id,
+              ticketSubject:
+                  '#${controller.ticketDetailsModel.data?.ticketId ?? ''} - ${controller.ticketDetailsModel.data?.subject ?? ''}',
+              clientName:
+                  '${controller.ticketDetailsModel.data?.firstName ?? ''} ${controller.ticketDetailsModel.data?.lastName ?? ''}',
+              clientMobile:
+                  controller.ticketDetailsModel.data?.phoneNumber ?? '',
+            );
+          }
+
+          return RefreshIndicator(
+            color: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).cardColor,
+            onRefresh: () async {
+              await controller.loadTicketDetails(widget.id);
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(Dimensions.space12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '#${controller.ticketDetailsModel.data?.ticketId ?? ''} - ${controller.ticketDetailsModel.data?.subject}',
+                            style: mediumLarge,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                        ),
+                        const SizedBox(width: Dimensions.space8),
+                        Text(
+                          controller.ticketDetailsModel.data?.statusName?.tr
+                                  .capitalize ??
+                              '',
+                          style: mediumDefault.copyWith(
+                              color: ColorResources.ticketStatusColor(
+                                  controller.ticketDetailsModel.data?.status ??
+                                      '')),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: Dimensions.space10),
+                    CustomCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(LocalStrings.contact.tr, style: lightSmall),
+                          Text(
+                              '${controller.ticketDetailsModel.data?.firstName ?? ''} ${controller.ticketDetailsModel.data?.lastName} (${controller.ticketDetailsModel.data?.company ?? ''})',
+                              style: regularDefault),
+                          const CustomDivider(space: Dimensions.space10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(LocalStrings.department.tr,
+                                  style: lightSmall),
+                              Text(LocalStrings.service.tr, style: lightSmall),
+                            ],
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '#${controller.ticketDetailsModel.data?.id} - ${controller.ticketDetailsModel.data?.subject}',
-                                style: mediumLarge,
-                              ),
+                                  controller.ticketDetailsModel.data
+                                          ?.departmentName ??
+                                      '-',
+                                  style: regularDefault),
                               Text(
-                                controller.ticketDetailsModel.data?.statusName
-                                        ?.tr.capitalize ??
-                                    '',
-                                style: mediumDefault.copyWith(
-                                    color: ColorResources.ticketStatusColor(
-                                        controller.ticketDetailsModel.data
-                                                ?.status ??
-                                            '')),
-                              )
+                                  controller.ticketDetailsModel.data
+                                          ?.serviceName ??
+                                      '-',
+                                  style: regularDefault),
                             ],
                           ),
-                          const SizedBox(height: Dimensions.space10),
-                          CustomCard(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(LocalStrings.contact.tr,
-                                    style: lightSmall),
-                                Text(
-                                    '${controller.ticketDetailsModel.data?.firstName ?? ''} ${controller.ticketDetailsModel.data?.lastName} (${controller.ticketDetailsModel.data?.company ?? ''})',
-                                    style: regularDefault),
-                                const CustomDivider(space: Dimensions.space10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(LocalStrings.department.tr,
-                                        style: lightSmall),
-                                    Text(LocalStrings.service.tr,
-                                        style: lightSmall),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                        controller.ticketDetailsModel.data
-                                                ?.departmentName ??
-                                            '-',
-                                        style: regularDefault),
-                                    Text(
-                                        controller.ticketDetailsModel.data
-                                                ?.serviceName ??
-                                            '-',
-                                        style: regularDefault),
-                                  ],
-                                ),
-                                const CustomDivider(space: Dimensions.space10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(LocalStrings.submitted.tr,
-                                        style: lightSmall),
-                                    Text(LocalStrings.priority.tr,
-                                        style: lightSmall),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                        DateConverter.formatValidityDate(
-                                            controller.ticketDetailsModel.data!
-                                                    .date ??
-                                                ''),
-                                        style: regularDefault),
-                                    Text(
-                                        controller.ticketDetailsModel.data
-                                                ?.priorityName ??
-                                            '-',
-                                        style: regularDefault),
-                                  ],
-                                ),
-                                const CustomDivider(space: Dimensions.space10),
-                                Text(LocalStrings.description.tr,
-                                    style: lightSmall),
-                                Text(
-                                    Converter.parseHtmlString(controller
-                                            .ticketDetailsModel.data?.message ??
-                                        '-'),
-                                    maxLines: 2,
-                                    style: regularDefault),
-                              ],
-                            ),
+                          const CustomDivider(space: Dimensions.space10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(LocalStrings.submitted.tr,
+                                  style: lightSmall),
+                              Text(LocalStrings.priority.tr, style: lightSmall),
+                            ],
                           ),
-                          // Status Change Selector
-                          if (controller.ticketDetailsModel.data?.status != '5')
-                            StatusChangeSelector(
-                              ticketId: widget.id,
-                              currentStatus: controller.ticketDetailsModel.data?.status ?? '1',
-                            ),
-                          const SizedBox(height: Dimensions.space15),
-                          // Add Reply Widget
-                          AddReplyWidget(ticketId: widget.id),
-                          const SizedBox(height: Dimensions.space15),
-                          if (controller.ticketDetailsModel.data?.ticketReplies
-                                  ?.isNotEmpty ??
-                              false) ...
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: Dimensions.space5,
-                                  vertical: Dimensions.space15),
-                              child: TextIcon(
-                                text: LocalStrings.ticketReplies.tr,
-                                textStyle: regularDefault,
-                                icon: Icons.comment_outlined,
-                              ),
-                            ),
-                            ListView.separated(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  return TicketReplies(
-                                    reply: controller.ticketDetailsModel.data!
-                                        .ticketReplies![index],
-                                  );
-                                },
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(height: Dimensions.space10),
-                                itemCount: controller.ticketDetailsModel.data!
-                                    .ticketReplies!.length)
-                          ]
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                  DateConverter.formatValidityDate(controller
+                                          .ticketDetailsModel.data!.date ??
+                                      ''),
+                                  style: regularDefault),
+                              Text(
+                                  controller.ticketDetailsModel.data
+                                          ?.priorityName ??
+                                      '-',
+                                  style: regularDefault),
+                            ],
+                          ),
+                          const CustomDivider(space: Dimensions.space10),
+                          Text(LocalStrings.description.tr, style: lightSmall),
+                          Text(
+                              Converter.parseHtmlString(
+                                  controller.ticketDetailsModel.data?.message ??
+                                      '-'),
+                              maxLines: 2,
+                              style: regularDefault),
+                        ],
                       ),
                     ),
-                  ),
-                );
+                    const SizedBox(height: Dimensions.space15),
+                    // Status Change Selector
+                    StatusChangeSelector(
+                      ticketId: widget.id,
+                      currentStatus:
+                          controller.ticketDetailsModel.data?.status ?? '1',
+                    ),
+                    const SizedBox(height: Dimensions.space15),
+                    // Add Reply Widget
+                    AddReplyWidget(ticketId: widget.id),
+                    const SizedBox(height: Dimensions.space15),
+                    if (controller.ticketDetailsModel.data?.ticketReplies
+                            ?.isNotEmpty ??
+                        false) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: Dimensions.space5,
+                            vertical: Dimensions.space15),
+                        child: TextIcon(
+                          text: LocalStrings.ticketReplies.tr,
+                          textStyle: regularDefault,
+                          icon: Icons.comment_outlined,
+                        ),
+                      ),
+                      ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return TicketReplies(
+                              reply: controller.ticketDetailsModel.data!
+                                  .ticketReplies![index],
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: Dimensions.space10),
+                          itemCount: controller
+                              .ticketDetailsModel.data!.ticketReplies!.length),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          );
         },
       ),
     );
