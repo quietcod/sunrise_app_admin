@@ -49,7 +49,7 @@ class ContactCard extends StatelessWidget {
               style: regularSmall.copyWith(color: ColorResources.blueColor),
             ),
             trailing: Switch(
-              activeColor: Colors.white,
+              activeThumbColor: Colors.white,
               activeTrackColor: Theme.of(context).primaryColor,
               onChanged: (value) {},
               value: true,

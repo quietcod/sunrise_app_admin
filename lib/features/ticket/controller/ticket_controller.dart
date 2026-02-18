@@ -253,9 +253,6 @@ class TicketController extends GetxController {
 
     if (responseModel.status) {
       await loadTicketDetails(ticketId);
-      CustomSnackBar.success(successList: ['Status updated successfully'.tr]);
-    } else {
-      CustomSnackBar.error(errorList: [responseModel.message.tr]);
     }
 
     isStatusChanging = false;
@@ -267,7 +264,6 @@ class TicketController extends GetxController {
 
   Future<bool> addReply(String ticketId, String message) async {
     if (message.trim().isEmpty) {
-      CustomSnackBar.error(errorList: ['Please enter a message'.tr]);
       return false;
     }
 
@@ -281,13 +277,89 @@ class TicketController extends GetxController {
 
     if (responseModel.status) {
       await loadTicketDetails(ticketId);
-      CustomSnackBar.success(successList: ['Reply added successfully'.tr]);
       update();
       return true;
     } else {
-      CustomSnackBar.error(errorList: [responseModel.message.tr]);
       update();
       return false;
     }
+  }
+
+  // OTP Close Ticket Logic
+  bool isOtpRequesting = false;
+  bool isOtpVerifying = false;
+  bool isOtpScreenShowing = false;
+  String? otpErrorMessage;
+
+  Future<bool> requestCloseOtp(String ticketId) async {
+    isOtpRequesting = true;
+    otpErrorMessage = null;
+    update();
+
+    ResponseModel responseModel = await ticketRepo.requestCloseOtp(ticketId);
+
+    isOtpRequesting = false;
+
+    if (responseModel.status) {
+      isOtpScreenShowing = true;
+      update();
+      return true;
+    } else {
+      update();
+      return false;
+    }
+  }
+
+  Future<bool> resendCloseOtp(String ticketId) async {
+    isOtpRequesting = true;
+    otpErrorMessage = null;
+    update();
+
+    ResponseModel responseModel = await ticketRepo.resendTicketOtp(ticketId);
+
+    isOtpRequesting = false;
+
+    if (responseModel.status) {
+      CustomSnackBar.success(successList: [responseModel.message]);
+      update();
+      return true;
+    } else {
+      update();
+      return false;
+    }
+  }
+
+  Future<bool> verifyCloseOtp(String ticketId, String otp) async {
+    if (otp.trim().isEmpty) {
+      otpErrorMessage = 'Please enter OTP';
+      update();
+      return false;
+    }
+
+    isOtpVerifying = true;
+    otpErrorMessage = null;
+    update();
+
+    ResponseModel responseModel =
+        await ticketRepo.verifyCloseOtp(ticketId, otp);
+
+    isOtpVerifying = false;
+
+    if (responseModel.status) {
+      isOtpScreenShowing = false;
+      await loadTicketDetails(ticketId);
+      update();
+      return true;
+    } else {
+      otpErrorMessage = 'Invalid OTP. Please try again.';
+      update();
+      return false;
+    }
+  }
+
+  void cancelOtpVerification() {
+    isOtpScreenShowing = false;
+    otpErrorMessage = null;
+    update();
   }
 }

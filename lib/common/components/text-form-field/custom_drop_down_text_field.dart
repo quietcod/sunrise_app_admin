@@ -51,7 +51,7 @@ class _CustomDropDownTextFieldState extends State<CustomDropDownTextField> {
         SizedBox(
           height: 50,
           child: DropdownButtonFormField(
-            value: (widget.selectedValue != '' &&
+            initialValue: (widget.selectedValue != '' &&
                     widget.selectedValue != null &&
                     widget.selectedValue != '0')
                 ? widget.selectedValue

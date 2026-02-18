@@ -5,7 +5,6 @@ import 'package:flutex_admin/common/controllers/theme_controller.dart';
 import 'package:flutex_admin/features/splash/controller/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutex_admin/core/utils/images.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -68,8 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ],
             ),
-          )
-          ,
+          ),
         ),
       ),
     );

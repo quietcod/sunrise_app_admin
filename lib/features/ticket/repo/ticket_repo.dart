@@ -123,4 +123,31 @@ class TicketRepo {
         .request(url, Method.postMethod, params, passHeader: true);
     return responseModel;
   }
+
+  Future<ResponseModel> requestCloseOtp(String ticketId) async {
+    String url =
+        "${UrlContainer.baseUrl}${UrlContainer.ticketCloseRequestOtpUrl}/id/$ticketId";
+    ResponseModel responseModel =
+        await apiClient.request(url, Method.postMethod, null, passHeader: true);
+    return responseModel;
+  }
+
+  Future<ResponseModel> verifyCloseOtp(String ticketId, String otp) async {
+    String url =
+        "${UrlContainer.baseUrl}${UrlContainer.ticketCloseVerifyOtpUrl}/id/$ticketId";
+    Map<String, dynamic> params = {
+      "otp": otp,
+    };
+    ResponseModel responseModel = await apiClient
+        .request(url, Method.postMethod, params, passHeader: true);
+    return responseModel;
+  }
+
+  Future<ResponseModel> resendTicketOtp(String ticketId) async {
+    String url =
+        "${UrlContainer.baseUrl}${UrlContainer.ticketCloseResendOtpUrl}/id/$ticketId";
+    ResponseModel responseModel =
+        await apiClient.request(url, Method.postMethod, null, passHeader: true);
+    return responseModel;
+  }
 }

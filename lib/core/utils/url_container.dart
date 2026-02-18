@@ -1,6 +1,7 @@
 class UrlContainer {
   static const String domainUrl = 'https://admin.thesunrisecomputers.com/';
-  static const String baseUrl = 'https://admin.thesunrisecomputers.com/flutex_admin_api/';
+  static const String baseUrl =
+      'https://admin.thesunrisecomputers.com/flutex_admin_api/';
 
   static const String downloadUrl = '$domainUrl/download/file';
   static const String uploadPath = 'uploads';
@@ -27,6 +28,9 @@ class UrlContainer {
   static const String estimatesUrl = 'estimates';
   static const String proposalsUrl = 'proposals';
   static const String ticketsUrl = 'tickets';
+  static const String ticketCloseRequestOtpUrl = 'tickets/send_otp';
+  static const String ticketCloseVerifyOtpUrl = 'tickets/verify_otp';
+  static const String ticketCloseResendOtpUrl = 'tickets/resend_otp';
   static const String leadsUrl = 'leads';
   static const String tasksUrl = 'tasks';
   static const String paymentsUrl = 'payments';

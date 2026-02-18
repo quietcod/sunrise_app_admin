@@ -110,7 +110,8 @@ class MenuScreen extends StatelessWidget {
                                 height: 17.5,
                                 width: 17.5),
                           ),
-                          activeColor: ColorResources.getSelectedIconColor(),
+                          activeThumbColor:
+                              ColorResources.getSelectedIconColor(),
                           activeTrackColor:
                               Theme.of(context).textTheme.bodyMedium!.color,
                           value: theme.darkTheme,

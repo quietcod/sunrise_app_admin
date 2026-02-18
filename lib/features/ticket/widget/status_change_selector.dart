@@ -9,10 +9,10 @@ class StatusChangeSelector extends StatelessWidget {
   final String currentStatus;
 
   const StatusChangeSelector({
-    Key? key,
+    super.key,
     required this.ticketId,
     required this.currentStatus,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class StatusChangeSelector extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(Icons.info_outline, color: Colors.blue, size: 20),
+              const Icon(Icons.info_outline, color: Colors.blue, size: 20),
               const SizedBox(width: Dimensions.space12),
               Text('Status:',
                   style: regularDefault.copyWith(fontWeight: FontWeight.bold)),
@@ -68,16 +68,23 @@ class StatusChangeSelector extends StatelessWidget {
                       ),
                     );
                   }).toList(),
-                  onChanged: controller.isStatusChanging
+                  onChanged: (controller.isStatusChanging ||
+                          controller.isOtpRequesting)
                       ? null
                       : (newStatus) {
                           if (newStatus != null && newStatus != currentStatus) {
-                            controller.changeStatus(ticketId, newStatus);
+                            if (newStatus == '5') {
+                              // Close requires OTP — request OTP which sets
+                              // isOtpScreenShowing = true on success
+                              controller.requestCloseOtp(ticketId);
+                            } else {
+                              controller.changeStatus(ticketId, newStatus);
+                            }
                           }
                         },
                 ),
               ),
-              if (controller.isStatusChanging)
+              if (controller.isStatusChanging || controller.isOtpRequesting)
                 const SizedBox(
                   width: 20,
                   height: 20,

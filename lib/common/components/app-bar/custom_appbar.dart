@@ -65,7 +65,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         if (previousRoute == '/splash-screen') {
                           Get.offAndToNamed(RouteHelper.dashboardScreen);
                         } else {
-                          Get.back();
+                          Navigator.of(context).pop();
                         }
                       }
                     },
