@@ -109,12 +109,12 @@ class TaskController extends GetxController {
     update();
   }
 
-  changeIsPublic() {
+  void changeIsPublic() {
     isPublic = !isPublic;
     update();
   }
 
-  changeBillable() {
+  void changeBillable() {
     billable = !billable;
     update();
   }

@@ -25,9 +25,10 @@ class ApiClient extends GetxService {
       if (method == Method.postMethod) {
         if (passHeader) {
           initToken();
-          response = await http.post(url,
-              body: params,
-              headers: {'Accept': 'application/json', 'X-Authorization': token});
+          response = await http.post(url, body: params, headers: {
+            'Accept': 'application/json',
+            'X-Authorization': token
+          });
         } else {
           response = await http.post(url, body: params);
         }
@@ -45,8 +46,10 @@ class ApiClient extends GetxService {
       } else {
         if (passHeader) {
           initToken();
-          response = await http.get(url,
-              headers: {'Accept': 'application/json', 'X-Authorization': token});
+          response = await http.get(url, headers: {
+            'Accept': 'application/json',
+            'X-Authorization': token
+          });
         } else {
           response = await http.get(url);
         }
@@ -102,7 +105,7 @@ class ApiClient extends GetxService {
 
   String token = '';
 
-  initToken() {
+  void initToken() {
     if (sharedPreferences.containsKey(SharedPreferenceHelper.accessTokenKey)) {
       String? t =
           sharedPreferences.getString(SharedPreferenceHelper.accessTokenKey);

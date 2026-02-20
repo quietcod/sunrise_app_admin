@@ -15,10 +15,8 @@ class LoginController extends GetxController {
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
 
-  TextEditingController emailController =
-      TextEditingController();
-  TextEditingController passwordController =
-      TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   String? email;
   String? password;
@@ -41,6 +39,10 @@ class LoginController extends GetxController {
     await loginRepo.apiClient.sharedPreferences.setString(
         SharedPreferenceHelper.accessTokenKey,
         responseModel.data?.accessToken.toString() ?? '');
+
+    await loginRepo.apiClient.sharedPreferences.setBool(
+        SharedPreferenceHelper.canCloseWithoutOtpKey,
+        responseModel.data?.canCloseWithoutOtp ?? false);
 
     Get.offAndToNamed(RouteHelper.dashboardScreen);
 
@@ -69,7 +71,7 @@ class LoginController extends GetxController {
     update();
   }
 
-  changeRememberMe() {
+  void changeRememberMe() {
     remember = !remember;
     update();
   }

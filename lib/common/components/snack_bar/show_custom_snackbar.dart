@@ -7,7 +7,7 @@ import 'package:flutex_admin/core/utils/color_resources.dart';
 import 'package:flutex_admin/core/utils/style.dart';
 
 class CustomSnackBar {
-  static error({required List<String> errorList, int duration = 2}) {
+  static void error({required List<String> errorList, int duration = 2}) {
     String message = '';
     if (errorList.isEmpty) {
       message = LocalStrings.somethingWentWrong.tr;
@@ -42,7 +42,7 @@ class CustomSnackBar {
     );
   }
 
-  static success({required List<String> successList, int duration = 5}) {
+  static void success({required List<String> successList, int duration = 5}) {
     String message = '';
     if (successList.isEmpty) {
       message = LocalStrings.somethingWentWrong.tr;

@@ -16,7 +16,7 @@ class SplashController extends GetxController {
   SplashController(
       {required this.apiClient, required this.localizationController});
 
-  gotoNextPage() async {
+  Future<void> gotoNextPage() async {
     await loadLanguage();
     bool isRemember = apiClient.sharedPreferences
             .getBool(SharedPreferenceHelper.rememberMeKey) ??

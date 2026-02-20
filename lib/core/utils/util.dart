@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:flutex_admin/core/utils/color_resources.dart';
 
 class MyUtils {
-  static splashScreenUtils(bool isDark) {
+  static void splashScreenUtils(bool isDark) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarColor: ColorResources.getScreenBgColor(),
         statusBarIconBrightness: Brightness.light,

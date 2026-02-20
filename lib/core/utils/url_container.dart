@@ -31,6 +31,7 @@ class UrlContainer {
   static const String ticketCloseRequestOtpUrl = 'tickets/send_otp';
   static const String ticketCloseVerifyOtpUrl = 'tickets/verify_otp';
   static const String ticketCloseResendOtpUrl = 'tickets/resend_otp';
+  static const String ticketCloseWithoutOtpUrl = 'tickets/close_no_otp';
   static const String leadsUrl = 'leads';
   static const String tasksUrl = 'tasks';
   static const String paymentsUrl = 'payments';

@@ -39,7 +39,7 @@ class PrivacyController extends GetxController {
     update();
   }
 
-  updateLoading(bool status) {
+  void updateLoading(bool status) {
     isLoading = status;
     update();
   }

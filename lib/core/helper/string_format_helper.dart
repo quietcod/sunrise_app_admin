@@ -302,13 +302,13 @@ class Converter {
     }
   }
 
-  static mul(String first, String second) {
+  static String mul(String first, String second) {
     double result =
         (double.tryParse(first) ?? 0) * (double.tryParse(second) ?? 0);
     return Converter.formatNumber(result.toString());
   }
 
-  static calculateRate(String amount, String rate, {int precision = 2}) {
+  static String calculateRate(String amount, String rate, {int precision = 2}) {
     double result =
         (double.tryParse(amount) ?? 0) / (double.tryParse(rate) ?? 0);
     return Converter.formatNumber(result.toString(), precision: precision);

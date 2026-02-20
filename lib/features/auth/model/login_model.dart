@@ -48,20 +48,24 @@ class Data {
     _staffId = json['staff_id'];
     _staffEmail = json['staff_email'];
     _accessToken = json['token'];
+    _canCloseWithoutOtp = json['can_close_ticket_without_otp'] == true;
   }
   String? _staffId;
   String? _staffEmail;
   String? _accessToken;
+  bool _canCloseWithoutOtp = false;
 
   String? get staffId => _staffId;
   String? get staffEmail => _staffEmail;
   String? get accessToken => _accessToken;
+  bool get canCloseWithoutOtp => _canCloseWithoutOtp;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['staff_id'] = _staffId;
     map['staff_email'] = _staffEmail;
     map['token'] = _accessToken;
+    map['can_close_ticket_without_otp'] = _canCloseWithoutOtp;
     return map;
   }
 }
