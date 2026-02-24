@@ -150,4 +150,12 @@ class TicketRepo {
         await apiClient.request(url, Method.postMethod, null, passHeader: true);
     return responseModel;
   }
+
+  Future<ResponseModel> closeTicketWithoutOtp(String ticketId) async {
+    String url =
+        "${UrlContainer.baseUrl}${UrlContainer.ticketCloseWithoutOtpUrl}/id/$ticketId";
+    ResponseModel responseModel =
+        await apiClient.request(url, Method.postMethod, null, passHeader: true);
+    return responseModel;
+  }
 }

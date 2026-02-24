@@ -54,7 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
             builder: (controller) => SingleChildScrollView(
               child: Column(
                 children: [
-
                   Container(
                     decoration: const BoxDecoration(
                       color: ColorResources.appBarColor,
@@ -95,7 +94,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-
                         SizedBox(
                           width: MediaQuery.sizeOf(context).width,
                           child: Padding(

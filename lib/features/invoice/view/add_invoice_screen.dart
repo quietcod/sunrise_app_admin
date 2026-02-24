@@ -207,8 +207,6 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                                 controller.allowedPaymentModesList
                                     .add(v.toString());
                               }
-                              debugPrint(controller.allowedPaymentModesList
-                                  .toString());
                             },
                             items: controller.paymentModesModel.data!
                                 .map((paymentMode) {

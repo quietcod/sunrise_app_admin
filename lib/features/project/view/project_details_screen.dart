@@ -78,7 +78,8 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
       ),
       body: GetBuilder<ProjectController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.projectDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,

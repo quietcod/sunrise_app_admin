@@ -59,7 +59,7 @@ class DownloadingDialogState extends State<DownloadingDialog> {
     });
   }
 
-  _saveImage() async {
+  Future<void> _saveImage() async {
     var response = await Dio()
         .get(widget.url, options: Options(responseType: ResponseType.bytes));
     final result = await ImageGallerySaverPlus.saveImage(

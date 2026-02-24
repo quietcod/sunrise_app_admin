@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "464038000300",
+    "project_id": "sunrise-admin-efd10",
+    "storage_bucket": "sunrise-admin-efd10.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464038000300:android:a821fd07db42a81b029109",
+        "android_client_info": {
+          "package_name": "com.sunrise.admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADL4fUn0jW6MweBtoDG_NxGjVZfAxk2_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

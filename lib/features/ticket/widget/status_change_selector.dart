@@ -14,6 +14,79 @@ class StatusChangeSelector extends StatelessWidget {
     required this.currentStatus,
   });
 
+  void _showCloseOptions(
+      BuildContext context, TicketController controller, String ticketId) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Icon(Icons.lock_outline, size: 40, color: Colors.amber),
+            const SizedBox(height: 12),
+            Text('Close Ticket', style: mediumLarge),
+            const SizedBox(height: 8),
+            Text(
+              'How would you like to close this ticket?',
+              style: regularDefault.copyWith(color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            // Request OTP option
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.sms_outlined),
+                label: const Text('Request OTP from Customer'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: Colors.teal),
+                  foregroundColor: Colors.teal,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  controller.requestCloseOtp(ticketId);
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Close without OTP option
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.lock_open_outlined),
+                label: const Text('Close Without OTP'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[700],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  controller.closeTicketWithoutOtp(ticketId);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final statuses = [
@@ -69,14 +142,20 @@ class StatusChangeSelector extends StatelessWidget {
                     );
                   }).toList(),
                   onChanged: (controller.isStatusChanging ||
-                          controller.isOtpRequesting)
+                          controller.isOtpRequesting ||
+                          controller.isClosingWithoutOtp)
                       ? null
                       : (newStatus) {
                           if (newStatus != null && newStatus != currentStatus) {
                             if (newStatus == '5') {
-                              // Close requires OTP — request OTP which sets
-                              // isOtpScreenShowing = true on success
-                              controller.requestCloseOtp(ticketId);
+                              if (controller.canCloseWithoutOtp) {
+                                // Permitted staff: ask how to close
+                                _showCloseOptions(
+                                    context, controller, ticketId);
+                              } else {
+                                // Regular staff: OTP required
+                                controller.requestCloseOtp(ticketId);
+                              }
                             } else {
                               controller.changeStatus(ticketId, newStatus);
                             }
@@ -84,7 +163,9 @@ class StatusChangeSelector extends StatelessWidget {
                         },
                 ),
               ),
-              if (controller.isStatusChanging || controller.isOtpRequesting)
+              if (controller.isStatusChanging ||
+                  controller.isOtpRequesting ||
+                  controller.isClosingWithoutOtp)
                 const SizedBox(
                   width: 20,
                   height: 20,

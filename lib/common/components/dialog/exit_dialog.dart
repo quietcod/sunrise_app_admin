@@ -8,7 +8,7 @@ import 'package:flutex_admin/core/utils/style.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-showExitDialog(BuildContext context) {
+void showExitDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) => Dialog(

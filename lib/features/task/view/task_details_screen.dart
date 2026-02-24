@@ -74,7 +74,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
       ),
       body: GetBuilder<TaskController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.taskDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   onRefresh: () async {

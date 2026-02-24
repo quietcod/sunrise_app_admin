@@ -16,6 +16,14 @@ class AuthRepo {
     return responseModel;
   }
 
+  Future<ResponseModel> sendFcmToken(String fcmToken) async {
+    Map<String, String> map = {'fcm_token': fcmToken};
+    String url = '${UrlContainer.baseUrl}${UrlContainer.fcmTokenUrl}';
+    ResponseModel responseModel =
+        await apiClient.request(url, Method.postMethod, map, passHeader: true);
+    return responseModel;
+  }
+
   Future<ResponseModel> forgetPassword(String email) async {
     Map<String, String> map = {'email': email};
     String url = '${UrlContainer.baseUrl}${UrlContainer.forgotPasswordUrl}';

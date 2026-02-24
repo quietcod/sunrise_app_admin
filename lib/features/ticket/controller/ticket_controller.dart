@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutex_admin/common/components/snack_bar/show_custom_snackbar.dart';
+import 'package:flutex_admin/core/helper/shared_preference_helper.dart';
 import 'package:flutex_admin/core/utils/local_strings.dart';
 import 'package:flutex_admin/common/models/response_model.dart';
 import 'package:flutex_admin/features/customer/model/contact_model.dart';
@@ -291,6 +292,36 @@ class TicketController extends GetxController {
   bool isOtpScreenShowing = false;
   String? otpErrorMessage;
 
+  // Close Without OTP Logic
+  bool isClosingWithoutOtp = false;
+
+  /// True if the currently logged-in staff member has permission to close
+  /// tickets without requiring an OTP from the customer.
+  bool get canCloseWithoutOtp =>
+      ticketRepo.apiClient.sharedPreferences
+          .getBool(SharedPreferenceHelper.canCloseWithoutOtpKey) ??
+      false;
+
+  Future<void> closeTicketWithoutOtp(String ticketId) async {
+    isClosingWithoutOtp = true;
+    update();
+
+    ResponseModel responseModel =
+        await ticketRepo.closeTicketWithoutOtp(ticketId);
+
+    isClosingWithoutOtp = false;
+
+    if (responseModel.status) {
+      await loadTicketDetails(ticketId);
+      CustomSnackBar.success(
+          successList: ['Ticket closed successfully (no OTP required).']);
+      update();
+    } else {
+      CustomSnackBar.error(errorList: [responseModel.message.tr]);
+      update();
+    }
+  }
+
   Future<bool> requestCloseOtp(String ticketId) async {
     isOtpRequesting = true;
     otpErrorMessage = null;
@@ -301,6 +332,23 @@ class TicketController extends GetxController {
     isOtpRequesting = false;
 
     if (responseModel.status) {
+      // Backend auto-closes the ticket when the customer has no phone number
+      // and returns auto_closed: true — skip the OTP screen in that case.
+      bool autoClosed = false;
+      try {
+        final decoded = jsonDecode(responseModel.responseJson);
+        autoClosed = decoded['auto_closed'] == true;
+      } catch (_) {}
+
+      if (autoClosed) {
+        CustomSnackBar.success(successList: [
+          'Ticket closed automatically (no phone number on file).'
+        ]);
+        await loadTicketDetails(ticketId);
+        update();
+        return true;
+      }
+
       isOtpScreenShowing = true;
       update();
       return true;

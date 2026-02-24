@@ -74,7 +74,8 @@ class _EstimateDetailsScreenState extends State<EstimateDetailsScreen> {
       ),
       body: GetBuilder<EstimateController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.estimateDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,

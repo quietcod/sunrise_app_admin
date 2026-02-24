@@ -75,7 +75,8 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
       ),
       body: GetBuilder<InvoiceController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.invoiceDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,

@@ -1,6 +1,4 @@
-import 'package:flutex_admin/core/service/api_service.dart';
 import 'package:flutex_admin/core/utils/util.dart';
-import 'package:flutex_admin/common/controllers/localization_controller.dart';
 import 'package:flutex_admin/common/controllers/theme_controller.dart';
 import 'package:flutex_admin/features/splash/controller/splash_controller.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +14,9 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    Get.put(ApiClient(sharedPreferences: Get.find()));
-    ThemeController themeController =
-        ThemeController(sharedPreferences: Get.find());
+    ThemeController themeController = Get.find<ThemeController>();
     MyUtils.splashScreenUtils(themeController.darkTheme);
-    Get.put(LocalizationController(sharedPreferences: Get.find()));
-    final controller = Get.put(SplashController(
-        apiClient: Get.find(), localizationController: Get.find()));
+    final controller = Get.find<SplashController>();
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -32,8 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void dispose() {
-    ThemeController themeController =
-        ThemeController(sharedPreferences: Get.find());
+    ThemeController themeController = Get.find<ThemeController>();
     MyUtils.allScreensUtils(themeController.darkTheme);
     super.dispose();
   }

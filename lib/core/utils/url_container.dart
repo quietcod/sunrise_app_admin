@@ -15,6 +15,7 @@ class UrlContainer {
   static const String loginUrl = 'auth/login';
   static const String logoutUrl = 'auth/logout';
   static const String forgotPasswordUrl = 'auth/forgot-password';
+  static const String fcmTokenUrl = 'auth/fcm-token';
 
   // Pages
   static const String overviewUrl = 'overview';
@@ -31,6 +32,7 @@ class UrlContainer {
   static const String ticketCloseRequestOtpUrl = 'tickets/send_otp';
   static const String ticketCloseVerifyOtpUrl = 'tickets/verify_otp';
   static const String ticketCloseResendOtpUrl = 'tickets/resend_otp';
+  static const String ticketCloseWithoutOtpUrl = 'tickets/close_no_otp';
   static const String leadsUrl = 'leads';
   static const String tasksUrl = 'tasks';
   static const String paymentsUrl = 'payments';

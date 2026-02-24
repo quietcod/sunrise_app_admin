@@ -42,7 +42,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
       ),
       body: GetBuilder<ItemController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.itemDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,

@@ -68,8 +68,7 @@ class _OnBoardIntroScreenState extends State<OnBoardIntroScreen> {
               ],
             ),
           ),
-        )
-        ,
+        ),
       ),
       showSkipButton: false,
       dotsFlex: 1,
@@ -96,7 +95,6 @@ class _OnBoardIntroScreenState extends State<OnBoardIntroScreen> {
         ),
       ),
       onChange: (v) {
-        debugPrint("Page Key $v");
         setState(() {
           currentPageID = v;
         });

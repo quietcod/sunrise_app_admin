@@ -90,125 +90,125 @@ class _ProposalScreenState extends State<ProposalScreen> {
         body: controller.isLoading
             ? const CustomLoader()
             : RefreshIndicator(
-          color: Theme.of(context).primaryColor,
-          backgroundColor: Theme.of(context).cardColor,
-          onRefresh: () async {
-            await controller.initialData(shouldLoad: false);
-          },
-          child: SingleChildScrollView(
-            controller: scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                if (controller.isSearch)
-                  SearchField(
-                    title: LocalStrings.proposalDetails.tr,
-                    searchController: controller.searchController,
-                    onTap: () => controller.searchProposal(),
-                  ),
-                if (controller.proposalsModel.overview != null)
-                  ExpansionTile(
-                    title: Row(
-                      children: [
-                        Container(
-                          width: Dimensions.space3,
-                          height: Dimensions.space15,
-                          color: Colors.blue,
-                        ),
-                        const SizedBox(width: Dimensions.space5),
-                        Text(
-                          LocalStrings.proposalSummery.tr,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                    shape: const Border(),
-                    initiallyExpanded: true,
+                color: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).cardColor,
+                onRefresh: () async {
+                  await controller.initialData(shouldLoad: false);
+                },
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: Dimensions.space15),
-                        child: SizedBox(
-                          height: 80,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              final item = controller.proposalsModel.overview![index];
-                              return OverviewCard(
-                                name: item.status!.tr,
-                                number: item.total.toString(),
-                                color: ColorResources.blueColor,
-                              );
-                            },
-                            separatorBuilder: (context, index) =>
-                            const SizedBox(width: Dimensions.space5),
-                            itemCount:
-                            controller.proposalsModel.overview!.length,
+                      if (controller.isSearch)
+                        SearchField(
+                          title: LocalStrings.proposalDetails.tr,
+                          searchController: controller.searchController,
+                          onTap: () => controller.searchProposal(),
+                        ),
+                      if (controller.proposalsModel.overview != null)
+                        ExpansionTile(
+                          title: Row(
+                            children: [
+                              Container(
+                                width: Dimensions.space3,
+                                height: Dimensions.space15,
+                                color: Colors.blue,
+                              ),
+                              const SizedBox(width: Dimensions.space5),
+                              Text(
+                                LocalStrings.proposalSummery.tr,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
                           ),
+                          shape: const Border(),
+                          initiallyExpanded: true,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: Dimensions.space15),
+                              child: SizedBox(
+                                height: 80,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    final item = controller
+                                        .proposalsModel.overview![index];
+                                    return OverviewCard(
+                                      name: item.status!.tr,
+                                      number: item.total.toString(),
+                                      color: ColorResources.blueColor,
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(width: Dimensions.space5),
+                                  itemCount: controller
+                                      .proposalsModel.overview!.length,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                Padding(
-                  padding: const EdgeInsets.all(Dimensions.space15),
-                  child: Row(
-                    children: [
-                      Text(
-                        LocalStrings.proposals.tr,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      const Spacer(),
-                      InkWell(
-                        onTap: () {},
+                      Padding(
+                        padding: const EdgeInsets.all(Dimensions.space15),
                         child: Row(
                           children: [
-                            const Icon(
-                              Icons.sort_outlined,
-                              size: Dimensions.space20,
-                              color: ColorResources.blueGreyColor,
-                            ),
-                            const SizedBox(width: Dimensions.space5),
                             Text(
-                              LocalStrings.filter.tr,
-                              style: const TextStyle(
-                                fontSize: Dimensions.fontDefault,
-                                color: ColorResources.blueGreyColor,
+                              LocalStrings.proposals.tr,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            const Spacer(),
+                            InkWell(
+                              onTap: () {},
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.sort_outlined,
+                                    size: Dimensions.space20,
+                                    color: ColorResources.blueGreyColor,
+                                  ),
+                                  const SizedBox(width: Dimensions.space5),
+                                  Text(
+                                    LocalStrings.filter.tr,
+                                    style: const TextStyle(
+                                      fontSize: Dimensions.fontDefault,
+                                      color: ColorResources.blueGreyColor,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
+                      if (controller.proposalsModel.data != null &&
+                          controller.proposalsModel.data!.isNotEmpty)
+                        ListView.separated(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: Dimensions.space15),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return ProposalCard(
+                              index: index,
+                              proposalModel: controller.proposalsModel,
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: Dimensions.space10),
+                          itemCount: controller.proposalsModel.data!.length,
+                        )
+                      else
+                        const Padding(
+                          padding: EdgeInsets.all(20),
+                          child: NoDataWidget(),
+                        ),
                     ],
                   ),
                 ),
-                if (controller.proposalsModel.data != null &&
-                    controller.proposalsModel.data!.isNotEmpty)
-                  ListView.separated(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: Dimensions.space15),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return ProposalCard(
-                        index: index,
-                        proposalModel: controller.proposalsModel,
-                      );
-                    },
-                    separatorBuilder: (context, index) =>
-                    const SizedBox(height: Dimensions.space10),
-                    itemCount: controller.proposalsModel.data!.length,
-                  )
-                else
-                  const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: NoDataWidget(),
-                  ),
-              ],
-            ),
-          ),
-        ),
+              ),
       );
     });
   }
-
 }

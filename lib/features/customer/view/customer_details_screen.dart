@@ -79,7 +79,8 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
       ),
       body: GetBuilder<CustomerController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.customerDetailsModel.data == null
               ? const CustomLoader()
               : ContainedTabBarView(
                   tabBarProperties: TabBarProperties(
