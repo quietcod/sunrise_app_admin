@@ -16,4 +16,5 @@ class SharedPreferenceHelper {
   static const String languageListKey = 'language-list-key';
 
   static const String canCloseWithoutOtpKey = 'can_close_ticket_without_otp';
+  static const String fcmTokenKey = 'fcm_token';
 }

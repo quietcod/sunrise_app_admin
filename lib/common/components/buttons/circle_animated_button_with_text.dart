@@ -27,7 +27,6 @@ class CircleAnimatedButtonWithText extends StatefulWidget {
 class _CircleAnimatedButtonWithTextState
     extends State<CircleAnimatedButtonWithText>
     with SingleTickerProviderStateMixin {
-  late double _scale;
   late AnimationController _controller;
 
   @override
@@ -39,28 +38,32 @@ class _CircleAnimatedButtonWithTextState
       ),
       lowerBound: 0.0,
       upperBound: 0.1,
-    )..addListener(() {
-        setState(() {});
-      });
+    );
     super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _scale = 1 - _controller.value;
     return Center(
       child: GestureDetector(
         onTap: widget.onTap,
         onTapDown: _tapDown,
         onTapUp: _tapUp,
-        child: Transform.scale(
-          scale: _scale,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            final scale = 1 - _controller.value;
+            return Transform.scale(
+              scale: scale,
+              child: child,
+            );
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

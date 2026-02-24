@@ -42,7 +42,8 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
       ),
       body: GetBuilder<PaymentController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.paymentDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,

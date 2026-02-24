@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -11,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutex_admin/core/route/route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutex_admin/core/helper/notification_helper.dart';
+import 'package:flutex_admin/core/helper/shared_preference_helper.dart';
 import 'core/service/di_services.dart' as services;
 
 /// Must be a top-level function — called when app is in the background/terminated
@@ -54,7 +58,13 @@ Future<void> main() async {
       requestSoundPermission: true,
     ),
   );
-  await flutterLocalNotificationsPlugin.initialize(initSettings);
+  await flutterLocalNotificationsPlugin.initialize(
+    settings: initSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      // User tapped on a foreground local notification
+      NotificationHelper.onLocalNotificationTapped(response.payload);
+    },
+  );
 
   // ---- Request notification permission (Android 13+ and iOS) ----
   await FirebaseMessaging.instance.requestPermission(
@@ -78,13 +88,17 @@ Future<void> main() async {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     final notification = message.notification;
     if (notification != null && Platform.isAndroid) {
+      // Encode FCM data as JSON string so the tap handler can parse it
+      final String payload = jsonEncode(message.data);
+
       // On Android, show a local notification manually since FCM
       // does NOT auto-display when the app is in the foreground.
       flutterLocalNotificationsPlugin.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        NotificationDetails(
+        id: notification.hashCode,
+        title: notification.title,
+        body: notification.body,
+        payload: payload,
+        notificationDetails: NotificationDetails(
           android: AndroidNotificationDetails(
             _channel.id,
             _channel.name,
@@ -99,23 +113,35 @@ Future<void> main() async {
     // iOS shows the notification automatically via setForegroundNotificationPresentationOptions
   });
 
-  // ---- Get and print FCM token (send this to your backend) ----
+  // ---- Get FCM token and save locally ----
   final token = await FirebaseMessaging.instance.getToken();
-  print('===== FCM TOKEN =====');
-  print(token);
-  print('=====================');
-
-  // ---- Listen for token refresh ----
-  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-    print('FCM Token refreshed: $newToken');
-    // TODO: send newToken to your backend
-  });
 
   final sharedPreferences = await SharedPreferences.getInstance();
+  if (token != null) {
+    await sharedPreferences.setString(
+        SharedPreferenceHelper.fcmTokenKey, token);
+  }
+
+  // ---- Listen for token refresh ----
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+    await sharedPreferences.setString(
+        SharedPreferenceHelper.fcmTokenKey, newToken);
+    // Re-register the new token with the backend so push notifications
+    // are not lost after Firebase rotates the token.
+    await NotificationHelper.syncFcmTokenToServer();
+  });
+
   Get.lazyPut(() => sharedPreferences);
   Map<String, Map<String, String>> languages = await services.init();
 
-  HttpOverrides.global = MyHttpOverrides();
+  // Only bypass SSL in debug mode — production must validate certificates
+  if (kDebugMode) {
+    HttpOverrides.global = MyHttpOverrides();
+  }
+
+  // ---- Setup notification tap handlers ----
+  NotificationHelper.setupInteractedMessage();
+
   runApp(MyApp(languages: languages));
 }
 

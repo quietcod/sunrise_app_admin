@@ -74,7 +74,8 @@ class _ProposalDetailsScreenState extends State<ProposalDetailsScreen> {
       ),
       body: GetBuilder<ProposalController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.proposalDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,

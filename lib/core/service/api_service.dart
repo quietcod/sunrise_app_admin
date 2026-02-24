@@ -15,6 +15,36 @@ class ApiClient extends GetxService {
   SharedPreferences sharedPreferences;
   ApiClient({required this.sharedPreferences});
 
+  Map<String, dynamic>? _redactParams(Map<String, dynamic>? params) {
+    if (params == null) {
+      return null;
+    }
+
+    const sensitiveKeys = {
+      'password',
+      'pass',
+      'pwd',
+      'token',
+      'access_token',
+      'refresh_token',
+      'authorization',
+    };
+
+    final Map<String, dynamic> copy = <String, dynamic>{};
+    params.forEach((key, value) {
+      final keyLower = key.toLowerCase();
+      if (sensitiveKeys.contains(keyLower)) {
+        copy[key] = '***';
+      } else if (value is Map<String, dynamic>) {
+        copy[key] = _redactParams(value);
+      } else {
+        copy[key] = value;
+      }
+    });
+
+    return copy;
+  }
+
   Future<ResponseModel> request(
       String uri, String method, Map<String, dynamic>? params,
       {bool passHeader = false}) async {
@@ -58,10 +88,10 @@ class ApiClient extends GetxService {
       if (kDebugMode) {
         print('====> url: ${uri.toString()}');
         print('====> method: $method');
-        print('====> params: ${params.toString()}');
+        print('====> params: ${_redactParams(params).toString()}');
         print('====> status: ${response.statusCode}');
-        print('====> body: ${response.body.toString()}');
-        print('====> token: $token');
+        print('====> body: <redacted>');
+        print('====> token: <redacted>');
       }
 
       StatusModel model = StatusModel.fromJson(jsonDecode(response.body));

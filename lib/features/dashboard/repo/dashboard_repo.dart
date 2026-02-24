@@ -9,8 +9,12 @@ class DashboardRepo {
 
   Future<ResponseModel> getData() async {
     String url = "${UrlContainer.baseUrl}${UrlContainer.dashboardUrl}";
-    ResponseModel responseModel =
-        await apiClient.request(url, Method.getMethod, null, passHeader: true,);
+    ResponseModel responseModel = await apiClient.request(
+      url,
+      Method.getMethod,
+      null,
+      passHeader: true,
+    );
     return responseModel;
   }
 

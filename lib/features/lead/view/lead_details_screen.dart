@@ -73,7 +73,8 @@ class _LeadDetailsScreenState extends State<LeadDetailsScreen> {
       ),
       body: GetBuilder<LeadController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.leadDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,

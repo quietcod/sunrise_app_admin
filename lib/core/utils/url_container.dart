@@ -15,6 +15,7 @@ class UrlContainer {
   static const String loginUrl = 'auth/login';
   static const String logoutUrl = 'auth/logout';
   static const String forgotPasswordUrl = 'auth/forgot-password';
+  static const String fcmTokenUrl = 'auth/fcm-token';
 
   // Pages
   static const String overviewUrl = 'overview';

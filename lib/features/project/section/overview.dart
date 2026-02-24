@@ -20,8 +20,8 @@ class OverviewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     int daysLeft = projectDetailsModel.deadline != null
         ? int.parse(DateTime.parse(projectDetailsModel.deadline!)
-        .difference(DateTime.now())
-        .inDays
+            .difference(DateTime.now())
+            .inDays
             .toString())
         : 0;
     return Padding(

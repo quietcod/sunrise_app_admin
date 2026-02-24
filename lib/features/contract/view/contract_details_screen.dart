@@ -72,7 +72,8 @@ class _ContractDetailsScreenState extends State<ContractDetailsScreen> {
       ),
       body: GetBuilder<ContractController>(
         builder: (controller) {
-          return controller.isLoading
+          return controller.isLoading ||
+                  controller.contractDetailsModel.data == null
               ? const CustomLoader()
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,

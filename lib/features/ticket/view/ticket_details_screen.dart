@@ -83,6 +83,19 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
             return const CustomLoader();
           }
 
+          if (controller.ticketDetailsModel.data == null) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(Dimensions.space20),
+                child: Text(
+                  'Ticket not found or failed to load.',
+                  style: regularDefault,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          }
+
           // Show OTP verification screen when OTP has been sent
           if (controller.isOtpScreenShowing) {
             return OtpVerificationScreen(
@@ -179,7 +192,7 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                             children: [
                               Text(
                                   DateConverter.formatValidityDate(controller
-                                          .ticketDetailsModel.data!.date ??
+                                          .ticketDetailsModel.data?.date ??
                                       ''),
                                   style: regularDefault),
                               Text(
@@ -235,8 +248,9 @@ class _TicketDetailsScreenState extends State<TicketDetailsScreen> {
                           },
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: Dimensions.space10),
-                          itemCount: controller
-                              .ticketDetailsModel.data!.ticketReplies!.length),
+                          itemCount: controller.ticketDetailsModel.data
+                                  ?.ticketReplies?.length ??
+                              0),
                     ],
                   ],
                 ),

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutex_admin/core/utils/dimensions.dart';
 import 'package:flutex_admin/core/utils/style.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +14,7 @@ class CustomContainer extends StatelessWidget {
   final String number;
   final Color color;
   final IconData? icon;
-  final Double? iconSize;
+  final double? iconSize;
   @override
   Widget build(BuildContext context) {
     return Expanded(

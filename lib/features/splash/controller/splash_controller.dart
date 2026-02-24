@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutex_admin/core/service/api_service.dart';
 import 'package:flutex_admin/core/utils/local_strings.dart';
 import 'package:flutex_admin/common/controllers/localization_controller.dart';
+import 'package:flutex_admin/core/helper/notification_helper.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutex_admin/core/helper/shared_preference_helper.dart';
@@ -36,16 +37,22 @@ class SplashController extends GetxController {
     update();
 
     if (isOnBoard == false) {
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(milliseconds: 300), () {
         Get.offAndToNamed(RouteHelper.onboardScreen);
       });
     } else {
       if (isRemember) {
-        Future.delayed(const Duration(seconds: 1), () {
+        Future.delayed(const Duration(milliseconds: 300), () {
           Get.offAndToNamed(RouteHelper.dashboardScreen);
+          // Process any pending notification from cold-start tap
+          NotificationHelper.processPendingNotification();
+          // Re-register the FCM token on every app launch for already-logged-in
+          // users. This ensures the server always has the current token even if
+          // Firebase rotated it since the last login.
+          NotificationHelper.syncFcmTokenToServer();
         });
       } else {
-        Future.delayed(const Duration(seconds: 1), () {
+        Future.delayed(const Duration(milliseconds: 300), () {
           Get.offAndToNamed(RouteHelper.loginScreen);
         });
       }

@@ -1,19 +1,21 @@
 class PrivacyResponseModel {
   PrivacyResponseModel({
-      String? remark, 
-      String? status, 
-      Message? message, 
-      Data? data,}){
+    String? remark,
+    String? status,
+    Message? message,
+    Data? data,
+  }) {
     _remark = remark;
     _status = status;
     _message = message;
     _data = data;
-}
+  }
 
   PrivacyResponseModel.fromJson(dynamic json) {
     _remark = json['remark'];
     _status = json['status'];
-    _message = json['message'] != null ? Message.fromJson(json['message']) : null;
+    _message =
+        json['message'] != null ? Message.fromJson(json['message']) : null;
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
   String? _remark;
@@ -38,14 +40,14 @@ class PrivacyResponseModel {
     }
     return map;
   }
-
 }
 
 class Data {
   Data({
-      List<PolicyPages>? policyPages,}){
+    List<PolicyPages>? policyPages,
+  }) {
     _policyPages = policyPages;
-}
+  }
 
   Data.fromJson(dynamic json) {
     if (json['policy_pages'] != null) {
@@ -66,27 +68,29 @@ class Data {
     }
     return map;
   }
-
 }
 
 class PolicyPages {
   PolicyPages({
-      int? id, 
-      String? dataKeys, 
-      DataValues? dataValues, 
-      String? createdAt, 
-      String? updatedAt,}){
+    int? id,
+    String? dataKeys,
+    DataValues? dataValues,
+    String? createdAt,
+    String? updatedAt,
+  }) {
     _id = id;
     _dataKeys = dataKeys;
     _dataValues = dataValues;
     _createdAt = createdAt;
     _updatedAt = updatedAt;
-}
+  }
 
   PolicyPages.fromJson(dynamic json) {
     _id = json['id'];
     _dataKeys = json['data_keys'];
-    _dataValues = json['data_values'] != null ? DataValues.fromJson(json['data_values']) : null;
+    _dataValues = json['data_values'] != null
+        ? DataValues.fromJson(json['data_values'])
+        : null;
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
   }
@@ -113,16 +117,16 @@ class PolicyPages {
     map['updated_at'] = _updatedAt;
     return map;
   }
-
 }
 
 class DataValues {
   DataValues({
-      String? title, 
-      String? details,}){
+    String? title,
+    String? details,
+  }) {
     _title = title;
     _details = details;
-}
+  }
 
   DataValues.fromJson(dynamic json) {
     _title = json['title'];
@@ -140,14 +144,14 @@ class DataValues {
     map['details'] = _details;
     return map;
   }
-
 }
 
 class Message {
   Message({
-      List<String>? success,}){
+    List<String>? success,
+  }) {
     _success = success;
-}
+  }
 
   Message.fromJson(dynamic json) {
     _success = json['success'] != null ? json['success'].cast<String>() : [];
@@ -161,5 +165,4 @@ class Message {
     map['success'] = _success;
     return map;
   }
-
 }

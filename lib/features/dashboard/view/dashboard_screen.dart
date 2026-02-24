@@ -5,7 +5,6 @@ import 'package:flutex_admin/common/components/custom_loader/custom_loader.dart'
 import 'package:flutex_admin/common/components/divider/custom_divider.dart';
 import 'package:flutex_admin/common/components/will_pop_widget.dart';
 import 'package:flutex_admin/core/route/route.dart';
-import 'package:flutex_admin/core/service/api_service.dart';
 import 'package:flutex_admin/core/utils/color_resources.dart';
 import 'package:flutex_admin/core/utils/dimensions.dart';
 import 'package:flutex_admin/core/utils/local_strings.dart';
@@ -32,8 +31,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
-    Get.put(ApiClient(sharedPreferences: Get.find()));
-    Get.put(DashboardRepo(apiClient: Get.find()));
+    Get.lazyPut(() => DashboardRepo(apiClient: Get.find()));
     final controller = Get.put(DashboardController(dashboardRepo: Get.find()));
     controller.isLoading = true;
 
@@ -224,7 +222,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 enlargeCenterPage: false,
                                 onPageChanged: (index, i) {
                                   controller.currentPageIndex = index;
-                                  setState(() {});
+                                  controller.update();
                                 },
                               ),
                               items: [
@@ -289,21 +287,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           space: Dimensions.space5,
                           padding: Dimensions.space15,
                         ),
-                        SfCircularChart(
-                            tooltipBehavior: TooltipBehavior(enable: true),
-                            legend: const Legend(
-                                isVisible: true,
-                                position: LegendPosition.bottom,
-                                textStyle: lightDefault),
-                            series: <CircularSeries>[
-                              DoughnutSeries<DataField, String>(
-                                  dataSource:
-                                      controller.homeModel.data?.projects,
-                                  xValueMapper: (DataField data, _) =>
-                                      data.status?.tr ?? '',
-                                  yValueMapper: (DataField data, _) =>
-                                      int.parse(data.total ?? ''))
-                            ]),
+                        RepaintBoundary(
+                          child: SfCircularChart(
+                              tooltipBehavior: TooltipBehavior(enable: true),
+                              legend: const Legend(
+                                  isVisible: true,
+                                  position: LegendPosition.bottom,
+                                  textStyle: lightDefault),
+                              series: <CircularSeries>[
+                                DoughnutSeries<DataField, String>(
+                                    dataSource:
+                                        controller.homeModel.data?.projects,
+                                    xValueMapper: (DataField data, _) =>
+                                        data.status?.tr ?? '',
+                                    yValueMapper: (DataField data, _) =>
+                                        int.parse(data.total ?? '0'))
+                              ]),
+                        ),
                       ],
                     ),
                   ),

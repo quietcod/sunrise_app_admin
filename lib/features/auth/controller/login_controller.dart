@@ -4,6 +4,7 @@ import 'package:flutex_admin/features/auth/model/login_model.dart';
 import 'package:flutex_admin/features/auth/repo/auth_repo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:flutex_admin/core/helper/notification_helper.dart';
 import 'package:flutex_admin/core/helper/shared_preference_helper.dart';
 import 'package:flutex_admin/core/route/route.dart';
 import 'package:flutex_admin/common/models/response_model.dart';
@@ -45,6 +46,13 @@ class LoginController extends GetxController {
         responseModel.data?.canCloseWithoutOtp ?? false);
 
     Get.offAndToNamed(RouteHelper.dashboardScreen);
+
+    // Send FCM token to backend after login.
+    // Uses the shared NotificationHelper utility so the same logic is reused
+    // on login, remember-me startup, and FCM token refresh.
+    Future.delayed(const Duration(seconds: 2), () {
+      NotificationHelper.syncFcmTokenToServer();
+    });
 
     if (remember) {
       changeRememberMe();
