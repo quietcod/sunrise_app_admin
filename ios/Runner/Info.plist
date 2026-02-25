@@ -45,6 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Firebase App Delegate Proxy - set to NO if you want to handle swizzling manually -->
+	<!-- Set to YES to let Firebase handle APNs token registration automatically -->
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<!-- Required for FCM background notifications on iOS -->
 	<key>UIBackgroundModes</key>
 	<array>

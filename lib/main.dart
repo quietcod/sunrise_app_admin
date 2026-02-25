@@ -15,32 +15,48 @@ import 'package:flutex_admin/core/route/route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutex_admin/core/helper/notification_helper.dart';
 import 'package:flutex_admin/core/helper/shared_preference_helper.dart';
+import 'package:flutex_admin/firebase_options.dart';
 import 'core/service/di_services.dart' as services;
 
 /// Must be a top-level function — called when app is in the background/terminated
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  // You can handle background data here if needed
+  // Initialize Firebase in background isolate with platform-specific options
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  if (kDebugMode) {
+    print('═══════════════════════════════════════════');
+    print('📩 BACKGROUND MESSAGE RECEIVED');
+    print('═══════════════════════════════════════════');
+    print('   Message ID: ${message.messageId}');
+    print('   Title: ${message.notification?.title}');
+    print('   Body: ${message.notification?.body}');
+    print('   Data: ${message.data}');
+    print('═══════════════════════════════════════════');
+  }
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 const AndroidNotificationChannel _channel = AndroidNotificationChannel(
-  'default_channel',
-  'Default Notifications',
-  description: 'This channel is used for important notifications.',
+  'sunrise_admin_channel',
+  'Sunrise Admin Notifications',
+  description: 'Notifications for Sunrise Admin app',
   importance: Importance.high,
 );
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // Initialize Firebase FIRST with platform-specific options
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  // Register background message handler
+  // Register background message handler (must be done early)
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // ---- Android: Create notification channel ----
@@ -48,6 +64,18 @@ Future<void> main() async {
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(_channel);
+
+  // ---- iOS: Request notification permissions ----
+  if (Platform.isIOS) {
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+  }
 
   // ---- Initialize local notifications (Android icon + iOS) ----
   const InitializationSettings initSettings = InitializationSettings(
@@ -58,6 +86,7 @@ Future<void> main() async {
       requestSoundPermission: true,
     ),
   );
+
   await flutterLocalNotificationsPlugin.initialize(
     settings: initSettings,
     onDidReceiveNotificationResponse: (NotificationResponse response) {
@@ -67,7 +96,7 @@ Future<void> main() async {
   );
 
   // ---- Request notification permission (Android 13+ and iOS) ----
-  await FirebaseMessaging.instance.requestPermission(
+  final NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
     alert: true,
     announcement: false,
     badge: true,
@@ -76,6 +105,18 @@ Future<void> main() async {
     provisional: false,
     sound: true,
   );
+
+  // Print authorization status for debugging
+  if (kDebugMode) {
+    print('═══════════════════════════════════════════');
+    print('📋 NOTIFICATION PERMISSION STATUS');
+    print('═══════════════════════════════════════════');
+    print('   Authorization: ${settings.authorizationStatus}');
+    print('   Alert: ${settings.alert}');
+    print('   Badge: ${settings.badge}');
+    print('   Sound: ${settings.sound}');
+    print('═══════════════════════════════════════════');
+  }
 
   // ---- iOS: show foreground notifications ----
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -87,6 +128,14 @@ Future<void> main() async {
   // ---- Listen to foreground messages (both Android & iOS) ----
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     final notification = message.notification;
+
+    if (kDebugMode) {
+      print('📬 Foreground message received:');
+      print('   Title: ${notification?.title}');
+      print('   Body: ${notification?.body}');
+      print('   Data: ${message.data}');
+    }
+
     if (notification != null && Platform.isAndroid) {
       // Encode FCM data as JSON string so the tap handler can parse it
       final String payload = jsonEncode(message.data);
@@ -97,7 +146,6 @@ Future<void> main() async {
         id: notification.hashCode,
         title: notification.title,
         body: notification.body,
-        payload: payload,
         notificationDetails: NotificationDetails(
           android: AndroidNotificationDetails(
             _channel.id,
@@ -108,13 +156,36 @@ Future<void> main() async {
             icon: '@mipmap/ic_launcher',
           ),
         ),
+        payload: payload,
       );
     }
     // iOS shows the notification automatically via setForegroundNotificationPresentationOptions
   });
 
+  // ---- iOS: Get APNs token ----
+  if (Platform.isIOS) {
+    final apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+    if (kDebugMode) {
+      print('📱 APNs Token: $apnsToken');
+    }
+
+    // If APNs token is null, it might not be ready yet
+    // Firebase will handle this automatically when it becomes available
+    if (apnsToken == null) {
+      // Wait a moment and try again
+      await Future.delayed(const Duration(seconds: 2));
+      final retryApnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      if (kDebugMode) {
+        print('📱 APNs Token (retry): $retryApnsToken');
+      }
+    }
+  }
+
   // ---- Get FCM token and save locally ----
   final token = await FirebaseMessaging.instance.getToken();
+  if (kDebugMode) {
+    print('🔥 FCM Token: $token');
+  }
 
   final sharedPreferences = await SharedPreferences.getInstance();
   if (token != null) {
@@ -124,6 +195,9 @@ Future<void> main() async {
 
   // ---- Listen for token refresh ----
   FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+    if (kDebugMode) {
+      print('🔄 FCM Token refreshed: $newToken');
+    }
     await sharedPreferences.setString(
         SharedPreferenceHelper.fcmTokenKey, newToken);
     // Re-register the new token with the backend so push notifications
