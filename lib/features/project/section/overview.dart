@@ -99,9 +99,9 @@ class OverviewWidget extends StatelessWidget {
                   children: [
                     Text(
                         projectDetailsModel.billingType == '1'
-                            ? projectDetailsModel.projectCost!
+                            ? projectDetailsModel.projectCost ?? ''
                             : projectDetailsModel.billingType == '2'
-                                ? '${projectDetailsModel.projectRatePerHour} / ${LocalStrings.hours.tr}'
+                                ? '${projectDetailsModel.projectRatePerHour ?? '0'} / ${LocalStrings.hours.tr}'
                                 : projectDetailsModel.projectCost ?? '',
                         style: regularDefault),
                     Text(projectDetailsModel.totalLoggedTime ?? '00:00',
@@ -135,9 +135,12 @@ class OverviewWidget extends StatelessWidget {
             ),
             child: CustomLinerProgress(
               color: ColorResources.redColor,
-              value: double.parse(projectDetailsModel.progress!) * .01,
+              value: double.tryParse(projectDetailsModel.progress ?? '0') !=
+                      null
+                  ? (double.parse(projectDetailsModel.progress ?? '0') * .01)
+                  : 0,
               name: LocalStrings.projectProgress.tr,
-              data: '${projectDetailsModel.progress!}%',
+              data: '${projectDetailsModel.progress ?? '0'}%',
             ),
           ),
           const SizedBox(height: Dimensions.space15),
@@ -195,7 +198,7 @@ class OverviewWidget extends StatelessWidget {
                     value: double.parse(daysLeft.toString()) * .01,
                     name: LocalStrings.daysLeft.tr,
                     data:
-                        '${daysLeft > 0 ? daysLeft : 0}/${DateTime.parse(projectDetailsModel.deadline!).difference(DateTime.parse(projectDetailsModel.startDate!)).inDays.toString()}',
+                        '${daysLeft > 0 ? daysLeft : 0}/${(projectDetailsModel.deadline != null && projectDetailsModel.startDate != null) ? DateTime.parse(projectDetailsModel.deadline!).difference(DateTime.parse(projectDetailsModel.startDate!)).inDays.toString() : '0'}',
                   ),
                 ),
               ),
@@ -217,7 +220,8 @@ class OverviewWidget extends StatelessWidget {
                   name: LocalStrings.totalExpenses.tr,
                   //TODO: get the right value
                   number: '0.00',
-                  color: Theme.of(context).textTheme.bodyLarge!.color!),
+                  color: Theme.of(context).textTheme.bodyLarge?.color ??
+                      Colors.black),
               const SizedBox(width: Dimensions.space10),
               CustomContainer(
                   name: LocalStrings.billableExpenses.tr,
