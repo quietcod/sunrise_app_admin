@@ -112,7 +112,7 @@ class AttendanceController extends GetxController {
               timeLimit: const Duration(seconds: 20),
             ),
           ).timeout(const Duration(seconds: 22));
-          if (position != null) break;
+          break;
         } catch (_) {
           // try next accuracy level
         }
