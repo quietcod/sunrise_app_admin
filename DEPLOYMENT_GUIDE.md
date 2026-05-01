@@ -254,3 +254,99 @@ Admins can now assign a ticket to a staff member from the ticket detail page.
 (`geocoding ^4.0.0`, `flutter_widget_from_html ^0.17.1`, `file_picker ^11.0.2`)
 pin them to older majors. This is the latest reachable state. Bumping them
 requires upstream releases.
+
+---
+
+## Geolocator / Location Permissions
+
+The attendance system uses two packages: `geolocator` (GPS coordinates) and
+`geocoding` (reverse-geocode coordinates → address).
+
+### Android — already configured
+
+`android/app/src/main/AndroidManifest.xml` declares both required
+permissions; no further action needed:
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+```
+
+`minSdk` and `targetSdk` are inherited from Flutter SDK defaults (currently
+min 23, target 35) — both fully supported by `geolocator`.
+
+### iOS — Info.plist already configured
+
+`ios/Runner/Info.plist` declares both required usage descriptions; no
+further action needed:
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app uses your location to record attendance check-in and
+        check-out coordinates.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app uses your location to record attendance check-in and
+        check-out coordinates.</string>
+```
+
+> If Apple App Store review flags the description text, edit both strings
+> to be more specific (e.g. "Sunrise Admin uses your location during
+> attendance check-in and check-out so your manager can verify on-site
+> work."). Both keys must have identical or at minimum non-empty descriptions.
+
+### iOS — Podfile / build steps
+
+1. From the `ios/` directory, run:
+   ```bash
+   pod install --repo-update
+   ```
+   This pulls in `geolocator_apple` and `geocoding_ios` native frameworks.
+2. Open `ios/Runner.xcworkspace` in Xcode (NOT the `.xcodeproj`).
+3. Verify deployment target is **iOS 12.0 or higher** (Runner → General →
+   Minimum Deployments). `geolocator_apple` requires iOS 12+.
+4. Set your Team / Bundle ID under Signing & Capabilities.
+5. Build:
+   ```bash
+   flutter build ios --release
+   ```
+   Then archive & upload via Xcode (Product → Archive → Distribute App).
+
+### iOS background location — NOT enabled (and not needed)
+
+The app only requests location while in use (foreground check-in / check-out).
+Background location is intentionally NOT enabled. If you ever add background
+tracking, you must:
+
+1. Add `location` to `UIBackgroundModes` in `Info.plist`.
+2. Switch `Geolocator.checkPermission()` flow to also request "Always"
+   permission.
+3. Add a `NSLocationAlwaysUsageDescription` key.
+4. Justify the background location use to App Store Review (otherwise
+   rejection is near-certain).
+
+### Runtime behaviour (both platforms)
+
+The controller (`lib/features/attendance/controller/attendance_controller.dart`)
+does the following on every check-in / check-out:
+
+1. Verifies device location services are ON (prompts user otherwise).
+2. Requests permission if not already granted; handles "denied forever" by
+   opening app settings.
+3. Tries to get a fresh fix at **High → Medium → Low** accuracy with a 20-second
+   timeout per attempt.
+4. Falls back to last-known position if no fresh fix can be obtained.
+5. Reverse-geocodes the coordinates to a human-readable address (best-effort;
+   falls back to lat/lng string if geocoding fails or times out at 8s).
+
+### iOS testing tips
+
+- iOS Simulator: GPS is stubbed. Use **Features → Location → Apple** (or
+  Custom Location) to simulate coordinates, otherwise check-in will hang
+  forever.
+- Real device: First-launch shows the system permission dialog. If the user
+  taps "Allow Once" it works for that session only; "Allow While Using App"
+  is the desired choice.
+- If reverse-geocoding returns just lat/lng, the device has no network, OR
+  Apple's geocoding service is rate-limiting — this is normal and the
+  attendance record still saves correctly with raw coordinates.
+
